@@ -114,7 +114,7 @@ public class Program {
 	public String[] exportProgram() {
 		String[] lines = new String[this.alphabet.size() + 1];
 		
-		String header = "\t";
+		String header = "";
 		
 		for (int i = 0; i < this.states.size() - 1; i++) {
 			header += this.states.get(i) + "\t";
@@ -228,6 +228,8 @@ public class Program {
     public void addSymbol(String symbol) {
     	if (isSymbolExist(symbol)) return;
     	
+    	if (this.alphabet.size() == 5) return;
+    	
     	this.alphabet.add(symbol);
     	
     	String[][] newRules = new String[this.alphabet.size()][];
@@ -250,7 +252,7 @@ public class Program {
     public void addState(String state) {
     	if (isStateExist(state)) return;
     	
-    	if (this.states.size() >= 15) return;
+    	if (this.states.size() == 15) return;
     	
     	this.states.add(state);
     	
@@ -275,6 +277,8 @@ public class Program {
     public void deleteSymbol(String symbol) {
     	if (!isSymbolExist(symbol)) return;
     	
+    	if (this.alphabet.size() == 3) return;
+    	
     	int symbolIndex = this.alphabet.indexOf(symbol);
     	int k = 0;
     	
@@ -297,7 +301,7 @@ public class Program {
     public void deleteState(String state) {
     	if (!isStateExist(state)) return;
     	
-    	if (this.states.size() <= 3) return;
+    	if (this.states.size() == 3) return;
     	
     	int stateIndex = this.states.indexOf(state);
     	int k;
@@ -337,6 +341,8 @@ public class Program {
     
     public void addColumn(int columnIndex) {
     	
+    	if (this.states.size() == 15) return;
+    	
     	String[][] newRules = new String[this.alphabet.size()][];
     	int k;
     	for (int i = 0; i < newRules.length; i++) {
@@ -361,6 +367,8 @@ public class Program {
     
     public void deleteColumn(int columnIndex) {
     	if (columnIndex < 0 || columnIndex > this.states.size() - 1) return;
+    	
+    	if (this.states.size() == 3) return;
     	
     	String[][] newRules = new String[this.alphabet.size()][];
     	int k;

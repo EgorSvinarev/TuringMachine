@@ -20,7 +20,6 @@ public class TuringMachine extends Observable
     public HashMap<String, TransitionRule> rules;
 //    Совершенные шаги
     public int                                      steps;
-//	  Общее количество шагов, необходимых для остановки машины
     public int                                      totalSteps;
     public String                                   currentState;
     private boolean                                 halted;
@@ -156,7 +155,11 @@ public class TuringMachine extends Observable
     
     public void setNewHeadPosition(int cellNumber) {
     	getTape().updateCurrentPositionByNumberOfCell(cellNumber);
-    	   	
+    	
+//    	this.tapeCaretaker = new TapeCaretaker();
+//    	tapeCaretaker.saveMemento(tape.createTapeMemento());
+//        this.machineCaretaker = new MachineCaretaker();
+    	
     	this.setChanged();
         this.notifyObservers();
     }
@@ -194,7 +197,7 @@ public class TuringMachine extends Observable
             this.tape.restoreTapeMemento(tapeCaretaker.retrieveMemento());
         else
         {
-            this.tape = new Tape(tape);
+        	this.tape = new Tape(tape);
             tapeCaretaker.saveMemento(tape.createTapeMemento());
             this.setTotalSteps();
         }
@@ -308,9 +311,9 @@ public class TuringMachine extends Observable
     
     private void setTotalSteps()
     {
-        while (this.stepForward())
-            ;
-        this.totalSteps = this.steps;
+//        while (this.stepForward());
+//        System.out.println(1);
+        this.totalSteps = 0;
         /** We should reset machine */
         this.steps = 0;
         this.currentState = INIT_STATE;

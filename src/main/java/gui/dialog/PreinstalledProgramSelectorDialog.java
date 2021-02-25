@@ -36,8 +36,8 @@ public class PreinstalledProgramSelectorDialog extends JDialog {
 	}
 	
 	private void formButtonGroup() {
-		addButton("Сложение", "algo/plus.mt");
-		addButton("Вычитание", "algo/minus.mt");
+		addButton("Удалить все 'a'", "algo/delete_all_a.mt");
+		addButton("Удалить первое 'а'", "algo/delete_first_a.mt");
 	}
 	
 	private void renderElements() {

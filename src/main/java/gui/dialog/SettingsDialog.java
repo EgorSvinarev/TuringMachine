@@ -9,8 +9,8 @@ public class SettingsDialog extends JDialog {
 	
 	/* Модели спиннеров */
 	SpinnerNumberModel 			tapeLengthSpinnerModel	= new SpinnerNumberModel(10, 10, 300, 1);
-	SpinnerNumberModel			firstOperandSpinnerModel= new SpinnerNumberModel(-1, -1, 9, 1);
-	SpinnerNumberModel			secondOperandSpinnerModel= new SpinnerNumberModel(-1, -1, 9, 1);
+	SpinnerNumberModel			firstOperandSpinnerModel= new SpinnerNumberModel(0, 0, 10, 1);
+	SpinnerNumberModel			secondOperandSpinnerModel= new SpinnerNumberModel(0, 0, 10, 1);
 	SpinnerNumberModel			delaySpinnerModel		= new SpinnerNumberModel(1, 1, 10, 1);
 	SpinnerNumberModel			headPositionSpinnerModel = new SpinnerNumberModel(3, 2, 300, 1);
 	

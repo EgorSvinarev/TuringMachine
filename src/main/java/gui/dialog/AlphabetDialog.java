@@ -65,6 +65,7 @@ public class AlphabetDialog extends JDialog{
 	}
 	
 	public String getValue() {
+		updateValue();
 		return this.value;
 	}
 	
@@ -93,6 +94,13 @@ public class AlphabetDialog extends JDialog{
 	
 	class SaveButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
+			
+			if (getValue().length() > 5 || getValue().length() < 3) {
+				JOptionPane.showMessageDialog(owner, "Недопустимый размер алфавита.",
+                        "Ошибка", JOptionPane.ERROR_MESSAGE, null);
+				return;
+			}
+			
 			if (!doesUserWantSaveAlgo()) {
 				setValidStatus(true);
 				dialog.dispose();
@@ -138,7 +146,7 @@ public class AlphabetDialog extends JDialog{
 	        		field.setText(alphabet);
 	        	}
 	        	catch (IOException exc) {
-	        		JOptionPane.showMessageDialog(owner, "Не удалось сохранить алгоритм.",
+	        		JOptionPane.showMessageDialog(owner, "Не удалось загрузить алфавит.",
 	                        "Ошибка", JOptionPane.ERROR_MESSAGE, null);
 	        	}
 	        }

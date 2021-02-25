@@ -11,7 +11,11 @@ import java.util.Observer;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 import turing.TuringMachine;
 import turing.tape.Tape;
@@ -44,6 +48,7 @@ public class TapeArea extends TitledPanel implements Observer
         renderElements();
         
         clearButton.addActionListener(new ClearButtonListener());
+        dataModel.addTableModelListener(new TableChangesListener());
     }
     
     private void renderElements() {
@@ -162,7 +167,7 @@ public class TapeArea extends TitledPanel implements Observer
         
         public boolean isCellEditable(int row, int column)
         {
-            return false;
+            return (column > 1);	 
         }
         
     }
@@ -211,6 +216,28 @@ public class TapeArea extends TitledPanel implements Observer
         }
     }
     
+    private class TableChangesListener implements TableModelListener {
+
+		public void tableChanged(TableModelEvent e) {
+			int row = e.getFirstRow();
+	        int column = e.getColumn();
+	        if ((row == -1) || (column == -1)) return;
+	        
+	        TableModel model = (TableModel)e.getSource();
+	        String data = (String) model.getValueAt(row, column);
+	        
+	        if (data.length() > 1 && (data.charAt(0) + "").equals(" ")) {
+	        	data = data.substring(1);
+	        }
+	        else if (data.equals("")) {
+	        	data = Tape.EMPTY_SYMBOL;
+	        }
+	        
+	        machine.getTape().setSymbolAt(column - 1, data);
+	        machine.notifyObs();
+		}
+    }
+		
     private class ClearButtonListener implements ActionListener {
     	public void actionPerformed(ActionEvent e) {
     		machine.getTape().clearTape();

@@ -14,28 +14,16 @@ import turing.TuringMachine;
 import turing.tape.Tape;
 import turing.Program;
 
-import gui.dialog.*;
-
 public class ProgramArea extends TitledPanel implements Observer
 {
     private static final long   serialVersionUID    = 1L;
     private static final String TITLE               = "Программа";
     private JScrollPane         scrollPane          = new JScrollPane();
-    private JPanel				btnPanel			= new JPanel();
     private JTable              table               = new JTable();
-    private JButton				addColumnBtn		= new JButton("Добавить символ");
-    private JButton				addRowBtn			= new JButton("Добавить состояние");
-    private JButton				deleteColumnBtn		= new JButton("Удалить символ");
-    private JButton				deleteRowBtn		= new JButton("Удалить состояние");
     private TapeTableModel      dataModel           = new TapeTableModel();
     private CurrentRuleRenderer renderer            = new CurrentRuleRenderer();
     private Program				program;
     private String				colNames;
-
-    private TableEditingDialog  addStateDialog;
-    private TableEditingDialog  addSymbolDialog;
-    private TableEditingDialog  deleteStateDialog;
-    private TableEditingDialog  deleteSymbolDialog;
     
     public ProgramArea()
     {
@@ -48,25 +36,8 @@ public class ProgramArea extends TitledPanel implements Observer
     	
         this.setLayout(new GridLayout(1, 1));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        
-        addColumnBtn.setPreferredSize(new Dimension(200, 30));
-        addColumnBtn.addActionListener(new AddingColumnListener());
-        addRowBtn.setPreferredSize(new Dimension(200, 30));
-        addRowBtn.addActionListener(new AddingRowListener());
-        deleteColumnBtn.setPreferredSize(new Dimension(200, 30));
-        deleteColumnBtn.addActionListener(new DeletingColumnListener());
-        deleteRowBtn.setPreferredSize(new Dimension(200, 30));
-        deleteRowBtn.addActionListener(new DeletingRowListener());
-        
-        btnPanel.add(addColumnBtn);
-        btnPanel.add(addRowBtn);
-        btnPanel.add(deleteColumnBtn);
-        btnPanel.add(deleteRowBtn);
-
-//        scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
-        
+              
         this.add(scrollPane);
-//        this.add(btnPanel);
         
         scrollPane.setViewportView(table);
         
@@ -76,11 +47,7 @@ public class ProgramArea extends TitledPanel implements Observer
         renderer.setCurrentSymbol(CurrentRuleRenderer.INIT_SYMBOL);
         this.setTableProperties();
         
-        this.updateTable();
-        
-        dataModel.addTableModelListener(new TableChangesListener());
-        
-        
+        this.updateTable();       
     }
     
     public void setProgram(Program program) {
@@ -88,22 +55,6 @@ public class ProgramArea extends TitledPanel implements Observer
     	
     	updateTable();
     	table.repaint();
-    }
-    
-    public void setAddStateDialog(TableEditingDialog window) {
-    	this.addStateDialog = window;
-    }
-    
-    public void setAddSymbolDialog(TableEditingDialog window) {
-    	this.addSymbolDialog = window;
-    }
-    
-    public void setDeleteStateDialog(TableEditingDialog window) {
-    	this.deleteStateDialog = window;
-    }
-    
-    public void setDeleteSymbolDialog(TableEditingDialog window) {
-    	this.deleteSymbolDialog = window;
     }
         
     private void setTableProperties()
@@ -244,49 +195,5 @@ public class ProgramArea extends TitledPanel implements Observer
                 return renderer.getTableCellRendererComponent(table, value, isSelected, hasFocus,
                         row, column);
         }
-    }
-    
-    class AddingColumnListener implements ActionListener {
-    	public void actionPerformed(ActionEvent e) {
-    		addSymbolDialog.setValidStatus(false);
-    		addSymbolDialog.setVisible(true);
-    	}
-    }
-    
-    class AddingRowListener implements ActionListener {
-    	public void actionPerformed(ActionEvent e) {
-    		addStateDialog.setValidStatus(false);
-    		addStateDialog.setVisible(true);
-    	}
-    }
-    
-    class DeletingColumnListener implements ActionListener {
-    	public void actionPerformed(ActionEvent e) {
-    		deleteSymbolDialog.setValidStatus(false);
-    		deleteSymbolDialog.setVisible(true);
-    	}
-    }
-    
-    class DeletingRowListener implements ActionListener {
-    	public void actionPerformed(ActionEvent e) {
-    		deleteStateDialog.setValidStatus(false);
-    		deleteStateDialog.setVisible(true);
-    	}
-    }
-    
-    class TableChangesListener implements TableModelListener {
-
-		public void tableChanged(TableModelEvent e) {
-			int row = e.getFirstRow();
-	        int column = e.getColumn();
-	        
-	        if ((row == -1) || (column == -1)) return;
-	        
-	        TableModel model = (TableModel)e.getSource();
-	        String data = (String) model.getValueAt(row, column);
-			
-	        program.setNewRule(row, column - 1, data);
-		}
-    	
     }
 }

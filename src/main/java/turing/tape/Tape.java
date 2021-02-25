@@ -16,7 +16,8 @@ public class Tape implements Cloneable
     public static final int    INIT_POSITION        = 2;
     public static final int    LEFT_MOST_POSITION   = 1;
     public static final char   FILL_SYMBOL_FLAG     = '0';
-    public static final String FILL_SYMBOL          = String.valueOf(' ');
+    public static final String EMPTY_SYMBOL          = String.valueOf(' ');
+    public static final String FILL_SYMBOL          = String.valueOf('*');
     public static final char   COUNTING_SYMBOL_FLAG = '1';
     public static final int    COUNTING_SYMBOL      = 1;
     
@@ -37,7 +38,7 @@ public class Tape implements Cloneable
         	cells.add("0");
         	for (int i = 0; i < 5; i++)
             {
-                cells.add(FILL_SYMBOL);
+                cells.add(EMPTY_SYMBOL);
             }
         	return;
         }
@@ -56,7 +57,7 @@ public class Tape implements Cloneable
         cells.add("0"); 
         for (int i = 0; i < 10; i++)
         {
-            cells.add(FILL_SYMBOL);
+            cells.add(EMPTY_SYMBOL);
         }
     }
     
@@ -66,7 +67,7 @@ public class Tape implements Cloneable
         cells.add("0"); 
         for (int i = 0; i < size; i++)
         {
-            cells.add(FILL_SYMBOL);
+            cells.add(EMPTY_SYMBOL);
         }
     }
     
@@ -144,13 +145,17 @@ public class Tape implements Cloneable
     
     public void addCells(int cellsNumber) {
     	for (int i = 0; i < cellsNumber; i++) {
-    		cells.add(FILL_SYMBOL);
+    		cells.add(EMPTY_SYMBOL);
     	}
     }
     
     public String getSymbolAt(int i)
     {
         return cells.get(i).toString();
+    }
+    
+    public void setSymbolAt(int i, String symbol) {
+    	cells.set(i, symbol);
     }
     
     public int getSize()
@@ -160,7 +165,7 @@ public class Tape implements Cloneable
     
     public void clearTape() {
     	for (int i = 0; i < cells.size(); i++) {
-    		cells.set(i, FILL_SYMBOL);
+    		cells.set(i, EMPTY_SYMBOL);
     	}
     }
     
@@ -171,7 +176,7 @@ public class Tape implements Cloneable
         while (it.hasNext())
             info.append(it.next().toString() + " ");
         info.append(", position is " + position);
-        System.out.println("printTape(): tape is " + info);
+        System.out.println(info);
     }
     
     public TapeMemento createTapeMemento()

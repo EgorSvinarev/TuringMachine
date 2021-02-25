@@ -273,12 +273,12 @@ public class ProgramDialog extends JDialog  implements Observer{
                         "Ошибка", JOptionPane.ERROR_MESSAGE, null);
 	        	flag = false;
 	        }
-	        else if (!program.isStateExist(parsedRule[2])) {
+	        else if (!buffer.isStateExist(parsedRule[2])) {
 	        	JOptionPane.showMessageDialog(owner, "Данного состояния не существует.",
                         "Ошибка", JOptionPane.ERROR_MESSAGE, null);
 	        	flag = false;
 	        }
-	        else if (!program.isSymbolExist(parsedRule[0])) {
+	        else if (!buffer.isSymbolExist(parsedRule[0])) {
 	        	JOptionPane.showMessageDialog(owner, "Данный символ отсутствует в алфавите.",
                         "Ошибка", JOptionPane.ERROR_MESSAGE, null);
 	        	flag = false;
@@ -296,8 +296,8 @@ public class ProgramDialog extends JDialog  implements Observer{
 	
 	private class InsertRightListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-	
-			if (program.getStates().length >= 15) {
+
+			if (buffer.getStates().length >= 15) {
 				JOptionPane.showMessageDialog(owner, "Недопустимое количество состояний.",
                         "Ошибка", JOptionPane.ERROR_MESSAGE, null);
 				return;
@@ -316,7 +316,7 @@ public class ProgramDialog extends JDialog  implements Observer{
 	private class InsertLeftListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			
-			if (program.getStates().length >= 15) {
+			if (buffer.getStates().length >= 15) {
 				JOptionPane.showMessageDialog(owner, "Недопустимое количество состояний.",
                         "Ошибка", JOptionPane.ERROR_MESSAGE, null);
 				return;
@@ -334,7 +334,7 @@ public class ProgramDialog extends JDialog  implements Observer{
 	private class DeleteRightListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			
-			if (program.getStates().length <= 3) {
+			if (buffer.getStates().length <= 3) {
 				JOptionPane.showMessageDialog(owner, "Недопустимое количество состояний.",
                         "Ошибка", JOptionPane.ERROR_MESSAGE, null);
 				return;
@@ -354,7 +354,7 @@ public class ProgramDialog extends JDialog  implements Observer{
 		public void actionPerformed(ActionEvent e) {
 			int selectedColumnIndex = table.getSelectedColumn();
 			
-			if (program.getStates().length <= 3) {
+			if (buffer.getStates().length <= 3) {
 				JOptionPane.showMessageDialog(owner, "Недопустимое количество состояний.",
                         "Ошибка", JOptionPane.ERROR_MESSAGE, null);
 				return;

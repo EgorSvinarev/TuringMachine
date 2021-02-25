@@ -15,7 +15,6 @@ public class InformationArea extends TitledPanel implements Observer
     private static final String LEADING_STATUS_STRING    = "Состояние: ";
     private static final String LEADING_STEP_STRING      = "Шаг: ";
     private static final String LEADING_STATE_STRING     = "Предыдущее состояние: ";
-    private static final String LEADING_TOTALSTEP_STRING = "Всего шагов: ";
     
     public JLabel               statusLabel              = new JLabel();
     public JLabel               stateLabel               = new JLabel();
@@ -28,7 +27,6 @@ public class InformationArea extends TitledPanel implements Observer
         statusLabel.setText(LEADING_STATUS_STRING);
         stateLabel.setText(LEADING_STATE_STRING);
         stepLabel.setText(LEADING_STEP_STRING);
-        totalStepLabel.setText(LEADING_TOTALSTEP_STRING);
         GridLayout layout = new GridLayout(1, 4);
         this.setLayout(layout);
         this.add(statusLabel);
@@ -52,17 +50,11 @@ public class InformationArea extends TitledPanel implements Observer
         stepLabel.setText(LEADING_STEP_STRING + steps);
     }
     
-    public void setTotalSteps(int totalSteps)
-    {
-        totalStepLabel.setText(LEADING_TOTALSTEP_STRING + totalSteps);
-    }
-    
     public void update(Observable o, Object arg)
     {
         TuringMachine machine = (TuringMachine) o;
         this.setStatus(machine.getStatus());
         this.setState(machine.getCurrentState());
         this.setSteps(machine.getSteps());
-        this.setTotalSteps(machine.getTotalSteps());
     }
 }

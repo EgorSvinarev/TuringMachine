@@ -82,10 +82,6 @@ public class MainFrame extends JFrame {
 	
 	/* Диалоговые окна */
 	private SettingsDialog  	settingsDialog		   = new SettingsDialog(this, "Настройки");
-	private TableEditingDialog 	addStateDialog		   = new AddStateDialog(this, "Добавить состояние", "Состояние: ");
-	private TableEditingDialog 	addSymbolDialog		   = new AddSymbolDialog(this, "Добавить символ", "Символ: ");
-	private TableEditingDialog  deleteStateDialog	   = new DeleteStateDialog(this, "Удалить состояние", "Номер состояния: ");
-	private TableEditingDialog  deleteSymbolDialog	   = new DeleteSymbolDialog(this, "Удалить символ", "Символ: ");
 	private AlphabetDialog		alphabetDialog		   = new AlphabetDialog(this);
 	private TapeInputDialog		tapeInputDialog		   = new TapeInputDialog(this);
 	private ProgramDialog		programDialog		   = new ProgramDialog(this);
@@ -103,42 +99,26 @@ public class MainFrame extends JFrame {
 	private int				delay;
 	
 	/* Режим работы машины */
-	private int 			machineMode				   = 1;
+	private int 			machineMode				   = 3;
 	
 	private boolean			isMachineStarted		   = false;		
 	private boolean			isEditable				   = true;
+	private int 			lastSettedHeadPosition 	   = Tape.INIT_POSITION;
 	
 	public MainFrame() {
 		super();
 		
-		this.setSize(new Dimension(900,680));
-		this.setResizable(false);
+		setSize(new Dimension(900,680));
+		setResizable(false);
 		setForeground(new Color(200, 200, 200));
         setBackground(new Color(200, 200, 200));
-        
-        this.addWindowListener(new WindowAdapter()
-        {
-            /* Вызывается когда окно программы закрывается. */
-            public void windowClosed(WindowEvent e)
-            {
-                System.exit(0);
-            }
-            
-            /* Вызывается когда окно закрывается. */
-            public void windowClosing(WindowEvent e)
-            {
-                System.exit(0);
-            }
-        });
+        setTitle("Машина Тьюринга");
         
         renderElements();
+        initListeners();
         
         programArea.setProgram(program);
-        programArea.setAddStateDialog(addStateDialog);
-		programArea.setAddSymbolDialog(addSymbolDialog);
-		programArea.setDeleteStateDialog(deleteStateDialog);
-		programArea.setDeleteSymbolDialog(deleteSymbolDialog);
-		
+        
 		tapeArea.setMachine(machine);
 		
 		machine.addObserver(tapeArea);
@@ -168,11 +148,6 @@ public class MainFrame extends JFrame {
 		algorithmMenu.add(editAlgoItem);
 		algorithmMenu.add(loadPreInstalledAlgoItem);
 		
-		newAlgoItem.addActionListener(new NewAlgoItemListener());
-		openAlgoFileItem.addActionListener(new OpenAlgoItemListener());
-		saveAlgoItem.addActionListener(new SaveAlgoItemListener());
-		editAlgoItem.addActionListener(new EditAlgoItemListener());
-		loadPreInstalledAlgoItem.addActionListener(new LoadPreinstalledAlgoListener());
 		
 		menuBar.add(traceMenu);
 		
@@ -184,23 +159,14 @@ public class MainFrame extends JFrame {
 		settingsMenu.add(algoSettingsItem);
 		settingsMenu.add(alphabetSettings);
 		settingsMenu.add(tapeInputSettings);
-		
-		algoSettingsItem.addActionListener(new AlgoSettingsItemLinsetener());
-		tapeInputSettings.addActionListener(new TapeInputItemListener());
-		
+				
 		menuBar.add(referenceMenu);
 		
 		referenceMenu.add(referenceItem);
 		referenceMenu.add(backgroundInfoItem);
 		
-		referenceItem.addActionListener(new ReferenceItemListener());
-		backgroundInfoItem.addActionListener(new BackgroundInfoItemListener());
-		
-		
 		/* Настройка информационной панели */
-        infoArea.setBounds(0, 0, this.getWidth() - RIGHT_PADDING, 50);
-        
-        
+        infoArea.setBounds(0, 0, this.getWidth() - RIGHT_PADDING, 50);       
         
         /* Настройка панели управления */
         runIcon = new ImageIcon(this.getClass().getResource("/images/Play24.gif"));
@@ -210,68 +176,89 @@ public class MainFrame extends JFrame {
         resetIcon = new ImageIcon(this.getClass().getResource("/images/Stop24.gif"));
         
         runPauseButton = new JButton(runIcon);
-//        runPauseButton.addActionListener(new RunPauseButtonListener());
         runPauseButton.setToolTipText("Запуск");
-        runPauseButton.addActionListener(new RunPauseButtonListener());
         
         backButton = new JButton(backIcon);
-//        backButton.addActionListener(new BackButtonListener());
         backButton.setToolTipText("Шаг назад");
-        backButton.addActionListener(new BackButtonListener());
         
         stepButton = new JButton(stepIcon);
-//        stepButton.addActionListener(new StepButtonListener());
         stepButton.setToolTipText("Шаг вперед");
-        stepButton.addActionListener(new StepButtonListener());
         
         resetButton = new JButton(resetIcon);
         resetButton.setToolTipText("Заново");
-        resetButton.addActionListener(new ResetButtonListener());
-        
-        alphabetSettings.addActionListener(new AlphabetSettingsItemListener());
-        
-        saveTraceItem.addActionListener(new SaveTraceItemListener());
-        watchTraceItem.addActionListener(new WatchTraceItemListener());
         
         controlPanel.setLayout(new GridLayout(1, 4, 5, 0));
         controlPanel.add(runPauseButton);
         controlPanel.add(backButton);
-//        controlPanel.add(stepButton);
         controlPanel.add(resetButton);
         
-        controlPanel.setBounds(0, 170, this.getWidth() - RIGHT_PADDING, 80);
-        
-        
+        /* Настройка панели с кнопками управления */
+        controlPanel.setBounds(0, 170, this.getWidth() - RIGHT_PADDING, 80); 
         
 		/* Настройка панели с лентой */
 		tapeArea.setBounds(0, 50, this.getWidth() - RIGHT_PADDING, 120);
         
-        
-        
         /* Настройка панели с программой */
-        programArea.setBounds(0, 250, this.getWidth() - RIGHT_PADDING, 360);
-        
-        
-        /* Добавление обработчиков для диалоговых окон */
-        addStateDialog.addWindowListener(new AddStateDialogWindowListener());
-        addSymbolDialog.addWindowListener(new AddSymbolDialogWindowListener());
-        deleteStateDialog.addWindowListener(new DeleteStateDialogWindowListener());
-        deleteSymbolDialog.addWindowListener(new DeleteSymbolDialogWindowListener());
-        alphabetDialog.addWindowListener(new AlphabetDialogWindowListener());
-        tapeInputDialog.addWindowListener(new TapeInpuDialogWindowListener());
-        settingsDialog.addWindowListener(new SettingsDialogWindowListener());
-        programDialog.addWindowListener(new ProgramDialogWindowListener());
-        preinstalledDialog.addWindowListener(new LoadPreinstalledWindowListener());
+        programArea.setBounds(0, 250, this.getWidth() - RIGHT_PADDING, 360);       
         
 		/* Добавление панелей в контейнер */
         this.setLayout(null);
 		this.getContentPane().add(infoArea);
 		this.getContentPane().add(tapeArea);
 		this.getContentPane().add(controlPanel);
-		this.getContentPane().add(programArea);        
+		this.getContentPane().add(programArea);        		
+	}
+	
+	private void initListeners() {
 		
+		/* Добавление обработчиков для элементов раздела меню "Алгоритм" */
+		newAlgoItem.addActionListener(new NewAlgoItemListener());
+		openAlgoFileItem.addActionListener(new OpenAlgoItemListener());
+		saveAlgoItem.addActionListener(new SaveAlgoItemListener());
+		editAlgoItem.addActionListener(new EditAlgoItemListener());
+		loadPreInstalledAlgoItem.addActionListener(new LoadPreinstalledAlgoListener());
+		
+		/* Добавление обработчиков для элементов раздела меню "Настройки" */ 
+		algoSettingsItem.addActionListener(new AlgoSettingsItemLinsetener());
+		tapeInputSettings.addActionListener(new TapeInputItemListener());
+		alphabetSettings.addActionListener(new AlphabetSettingsItemListener());
+		
+		/* Добавление обработчиков для элементов раздела меню "Помощь" */
+		referenceItem.addActionListener(new ReferenceItemListener());
+		backgroundInfoItem.addActionListener(new BackgroundInfoItemListener());
 
+		/* Добавление обработчиков для элементов раздела меню "Трасса" */
+		saveTraceItem.addActionListener(new SaveTraceItemListener());
+        watchTraceItem.addActionListener(new WatchTraceItemListener());
+
+        /* Добавление обработчиков для кнопок управления */
+        runPauseButton.addActionListener(new RunPauseButtonListener());
+        backButton.addActionListener(new BackButtonListener());
+		stepButton.addActionListener(new StepButtonListener());
+		resetButton.addActionListener(new ResetButtonListener());          
 		
+		/* Добавление обработчиков для диалоговых окон */
+        alphabetDialog.addWindowListener(new AlphabetDialogWindowListener());
+        tapeInputDialog.addWindowListener(new TapeInpuDialogWindowListener());
+        settingsDialog.addWindowListener(new SettingsDialogWindowListener());
+        programDialog.addWindowListener(new ProgramDialogWindowListener());
+        preinstalledDialog.addWindowListener(new LoadPreinstalledWindowListener());
+
+        this.addWindowListener(new WindowAdapter()
+        {
+            /* Вызывается когда окно программы закрывается. */
+            public void windowClosed(WindowEvent e)
+            {
+                System.exit(0);
+            }
+            
+            /* Вызывается когда окно закрывается. */
+            public void windowClosing(WindowEvent e)
+            {
+                System.exit(0);
+            }
+        });
+        
 	}
 	
 	private void setHalted() {
@@ -356,7 +343,7 @@ public class MainFrame extends JFrame {
 	private class OpenAlgoItemListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			FileNameExtensionFilter filter = new FileNameExtensionFilter(null, "mt");
-	        JFileChooser fileChooser = new JFileChooser();
+	        JFileChooser fileChooser = new JFileChooser(new File("algo"));
 	        fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
 	        fileChooser.setFileFilter(filter);
 	        if ( fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION ) {
@@ -366,6 +353,7 @@ public class MainFrame extends JFrame {
 	        		program.importProgram(lines);
 	        		
 	        		machine.setRules(program.getRulesHashMap());
+	        		machine.setNewHeadPosition(lastSettedHeadPosition);
 	        		
 	        		programArea.updateTable();	        		
 	        		programArea.repaint();
@@ -401,6 +389,7 @@ public class MainFrame extends JFrame {
         		program.importProgram(lines);
         		
         		machine.setRules(program.getRulesHashMap());
+        		machine.setNewHeadPosition(lastSettedHeadPosition);
         		
         		programArea.updateTable();
         		programArea.repaint();
@@ -482,6 +471,7 @@ public class MainFrame extends JFrame {
 			setPaused();
 			isMachineStarted = false;
             machine.resetMachine(null);
+            machine.setNewHeadPosition(lastSettedHeadPosition);
 		}
 	}
 	
@@ -493,8 +483,8 @@ public class MainFrame extends JFrame {
 			int tapeLength = settingsDialog.getTapeLength() - 1;
 			int delay = settingsDialog.getDelay();
 			int headPosition = settingsDialog.getHeadPosition();
-			String firstOperand = settingsDialog.getFirstOperand();
-			String secondOperand = settingsDialog.getSecondOperand();
+			int firstOperand = Integer.parseInt(settingsDialog.getFirstOperand());
+			int secondOperand = Integer.parseInt(settingsDialog.getSecondOperand());
 			
 			
 			String[] tape = generateTape(firstOperand, secondOperand);;
@@ -503,6 +493,15 @@ public class MainFrame extends JFrame {
 			stepTimer = new Timer(delay * 1000, new StepTimerListener());
 			stepTimer.setInitialDelay(delay * 1000);
 			
+			if (firstOperand == 0 && secondOperand == 0) {
+				machine.setNewHeadPosition(headPosition - 1);
+				
+				machineMode = settingsDialog.getMachineMode();
+				
+				lastSettedHeadPosition = headPosition - 1;
+				
+				return;
+			}
 			if (tapeLength >= tape.length) {
 				machine.resetMachineByInput(tape);
 				machine.getTape().addCells(tapeLength - tape.length);
@@ -512,32 +511,31 @@ public class MainFrame extends JFrame {
 			}
 			
 			
-			machine.setNewHeadPosition(headPosition - 1);
 			
-			machineMode = settingsDialog.getMachineMode();
 		}
 		
-		public String[] generateTape(String firstOperand, String secondOperand) {
-			String currentTape = machine.getTape().getTapeInString();
+		public String[] generateTape(int firstOperand, int secondOperand) {
+			String[] newTape = new String[firstOperand + secondOperand + 2];
 			
-			String[] newTape = new String[currentTape.length()];
+			int insertCounter = 0;
 			
-			for (int i = 0; i < currentTape.length(); i++) {
-				if (i == 1) {
-					if (!firstOperand.equals("-1")) newTape[i] = "0";
-					else newTape[i] = currentTape.charAt(i) + "";
+			newTape[0] = "0";
+			
+			for (int i = 1; i < newTape.length; i++) {
+				if (insertCounter < firstOperand) {
+					newTape[i] = Tape.FILL_SYMBOL;
 				}
-				else if (i == 2) {
-					if (!firstOperand.equals("-1")) newTape[i] = firstOperand;
-					else newTape[i] = currentTape.charAt(i) + "";;
+				else if (insertCounter == firstOperand) {
+					newTape[i] = Tape.EMPTY_SYMBOL;
 				}
-				else if (i == 4) {
-					if (!secondOperand.equals("-1")) newTape[i] = secondOperand;
-					else newTape[i] = currentTape.charAt(i) + "";;
+				else if (insertCounter > firstOperand && insertCounter < firstOperand + 1 + secondOperand){
+					newTape[i] = Tape.FILL_SYMBOL;
 				}
 				else {
-					newTape[i] = currentTape.charAt(i) + "";
+					newTape[i] = Tape.EMPTY_SYMBOL;
 				}
+				
+				insertCounter++;
 			}
 			
 			return newTape;
@@ -547,88 +545,6 @@ public class MainFrame extends JFrame {
 	private class ProgramDialogWindowListener extends WindowAdapter {
 		public void windowClosed(WindowEvent e) {
 			programArea.updateTable();
-		}
-	}
-	
-	private class AddStateDialogWindowListener extends WindowAdapter {
-
-		public void windowClosed(WindowEvent e) {
-			setPaused();
-			if (addStateDialog.isFormValid()) {
-				String value = addStateDialog.getValue();
-				Program program = programArea.getProgram();
-				
-				if (program.isStateExist(value)) {
-					JOptionPane.showMessageDialog(MainFrame.this, "Данное состояние уже существует в машине.",
-	                        "Ошибка", JOptionPane.ERROR_MESSAGE, null);
-					return;
-				}
-				
-				program.addState(value);
-				
-				programArea.updateTable();
-			}
-		}
-	}
-	
-	private class AddSymbolDialogWindowListener extends WindowAdapter {
-
-		public void windowClosed(WindowEvent e) {
-			setPaused();
-			if (addSymbolDialog.isFormValid()) {
-				String value = addSymbolDialog.getValue();
-				Program program = programArea.getProgram();
-				
-				if (program.isSymbolExist(value)) {
-					JOptionPane.showMessageDialog(MainFrame.this, "Данный символ уже существует в алфавите.",
-	                        "Ошибка", JOptionPane.ERROR_MESSAGE, null);
-					return;
-				}
-				
-				program.addSymbol(value);
-				
-				programArea.updateTable();
-			}
-		}
-	}
-	
-	private class DeleteStateDialogWindowListener extends WindowAdapter {
-		public void windowClosed(WindowEvent e) {
-			setPaused();
-			if (deleteStateDialog.isFormValid()) {
-				String value = deleteStateDialog.getValue();
-				Program program = programArea.getProgram();
-				
-				if (!program.isStateExist(value)) {
-					JOptionPane.showMessageDialog(MainFrame.this, "Данное состояние отсутствует в машине.",
-	                        "Ошибка", JOptionPane.ERROR_MESSAGE, null);
-					return;
-				}
-				
-				program.deleteState(value);
-				
-				programArea.updateTable();
-			}
-		}
-	}
-	
-	private class DeleteSymbolDialogWindowListener extends WindowAdapter {
-		public void windowClosed(WindowEvent e) {
-			setPaused();
-			if (deleteSymbolDialog.isFormValid()) {
-				String value = deleteSymbolDialog.getValue();
-				Program program = programArea.getProgram();
-				
-				if (!program.isSymbolExist(value)) {
-					JOptionPane.showMessageDialog(MainFrame.this, "Данный символ отсутствует в алфавите.",
-	                        "Ошибка", JOptionPane.ERROR_MESSAGE, null);
-					return;
-				}
-				
-				program.deleteSymbol(value);
-				
-				programArea.updateTable();
-			}
 		}
 	}
 	
@@ -722,9 +638,8 @@ public class MainFrame extends JFrame {
 			
 			if (tapeInputDialog.isFormValid()) {
 				String[] arr = tapeInputDialog.getValueInArr();
-
 				machine.resetMachineByInput(arr);
-			
+				machine.setNewHeadPosition(lastSettedHeadPosition);
 			}
 		}
 	}
